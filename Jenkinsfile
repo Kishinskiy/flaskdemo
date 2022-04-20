@@ -19,9 +19,17 @@ pipeline {
        stage("Building image") {
            steps{
                script{
-                  docker.withRegistry( '', registryCredential ) {
-                      def dockerImage = docker.build "kishinskiy/flaskdemo:latest"
-                      dockerImage.push()
+                //   docker.withRegistry( '', registryCredential ) {
+                //       def dockerImage = docker.build "kishinskiy/flaskdemo:latest"
+                //       dockerImage.push()
+
+                sh "docker build -t kishinskiy/flaskdemo:latest ."
+
+                withCredentials([
+                        usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'username', passwordVariable: 'password')
+                        ]){
+                        sh "docker login"
+                sh "docker push kishinskiy/flaskdemo"
                   }
                }
            }
